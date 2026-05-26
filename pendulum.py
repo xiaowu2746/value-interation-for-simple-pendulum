@@ -9,7 +9,7 @@ from math import pi, sin
 @dataclass(frozen=True)
 class PendulumParams:
     mass: float = 1.0
-    length: float = 1.0
+    length: float = 0.5
     gravity: float = 9.81
     damping: float = 0.05
     torque_limit: float = 3.0

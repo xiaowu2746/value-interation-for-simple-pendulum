@@ -200,6 +200,32 @@ python3 -m venv .venv
 .venv/bin/python main.py
 ```
 
+所有实验参数都集中在 `main.py` 文件顶部，便于直接修改：
+
+```python
+N_THETA = 81
+N_OMEGA = 81
+OMEGA_MAX = 8.0
+
+MASS = 1.0
+LENGTH = 0.5
+GRAVITY = 9.81
+DAMPING = 0.05
+
+INPUT_LIMIT = 3.0
+INPUT_GRID = tuple(np.linspace(-INPUT_LIMIT, INPUT_LIMIT, 9))
+
+DT = 0.05
+SIMULATION_TIME = 8.0
+MAX_ITERATIONS = 700
+```
+
+其中 `INPUT_GRID` 对应 9 个离散控制输入：
+
+```text
+[-3.00, -2.25, -1.50, -0.75, 0.00, 0.75, 1.50, 2.25, 3.00]
+```
+
 默认会分别运行：
 
 - `minimum_time`
@@ -216,22 +242,6 @@ python3 -m venv .venv
 - `*_torque.png`：控制输入曲线
 - `*_convergence.png`：值迭代收敛曲线
 - `*_animation.gif`：单摆摆起动画
-
-可调整参数示例：
-
-```bash
-.venv/bin/python main.py --n-theta 101 --n-omega 101 --u-max 5 --duration 12
-```
-
-主要参数说明：
-
-- `--n-theta`：角度网格数量
-- `--n-omega`：角速度网格数量
-- `--omega-max`：角速度范围为 `[-omega_max, omega_max]`
-- `--u-max`：输入力矩限制，控制集合为 `{-u_max, 0, u_max}`
-- `--dt`：离散时间步长
-- `--duration`：闭环仿真时长
-- `--max-iterations`：值迭代最大迭代次数
 
 ## 参考
 

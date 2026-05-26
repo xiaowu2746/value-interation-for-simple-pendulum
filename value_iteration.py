@@ -15,7 +15,7 @@ class ValueIterationConfig:
     discount: float = 0.985
     tolerance: float = 1e-3
     max_iterations: int = 700
-    actions: tuple[float, ...] = (-5.0, 0.0, 5.0)
+    actions: tuple[float, ...] = (-3.0, -2.25, -1.5, -0.75, 0.0, 0.75, 1.5, 2.25, 3.0)
     cost_name: str = "minimum_time"
 
 

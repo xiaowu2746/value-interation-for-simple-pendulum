@@ -1,20 +1,20 @@
 [
   {
     "cost": "minimum_time",
-    "iterations": 45,
+    "iterations": 30,
     "final_delta": 0.0,
-    "final_theta_error": -0.16324149054632509,
-    "final_omega": -0.2221075492290395,
-    "integral_abs_torque": 43.25,
-    "first_entered_target_neighborhood_s": 3.6
+    "final_theta_error": -0.11784609310656524,
+    "final_omega": -0.1199219027381859,
+    "integral_abs_torque": 15.7125,
+    "first_entered_target_neighborhood_s": 2.95
   },
   {
     "cost": "quadratic",
-    "iterations": 564,
-    "final_delta": 0.0009976177092312355,
-    "final_theta_error": -0.17697535394378727,
-    "final_omega": -0.12084028030576369,
-    "integral_abs_torque": 38.25,
-    "first_entered_target_neighborhood_s": 4.5
+    "iterations": 560,
+    "final_delta": 0.0009890938717944664,
+    "final_theta_error": -0.14615905679579244,
+    "final_omega": -0.19409300663600498,
+    "integral_abs_torque": 12.787500000000001,
+    "first_entered_target_neighborhood_s": 3.0
   }
 ]

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 from math import pi
 from pathlib import Path
+
+import numpy as np
 
 from costs import CostParams
 from pendulum import GridSpec, PendulumParams, angle_error, clamp, grid_state, rk4_step
@@ -20,6 +21,33 @@ from plotting import (
     write_csv,
 )
 from value_iteration import ValueIterationConfig, ValueIterationResult, run_value_iteration
+
+
+# -----------------------------
+# Parameters for the experiment
+# -----------------------------
+
+N_THETA = 81
+N_OMEGA = 81
+OMEGA_MAX = 8.0
+
+MASS = 1.0
+LENGTH = 0.5
+GRAVITY = 9.81
+DAMPING = 0.05
+
+INPUT_LIMIT = 3.0
+INPUT_GRID = tuple(np.linspace(-INPUT_LIMIT, INPUT_LIMIT, 9))
+
+DT = 0.05
+SIMULATION_TIME = 8.0
+MAX_ITERATIONS = 700
+
+THETA_0 = pi - 0.05
+OMEGA_0 = 0.0
+
+OUTPUT_DIR = "results"
+COST_FUNCTIONS = ("minimum_time", "quadratic")
 
 
 def policy_action(theta: float, omega: float, result: ValueIterationResult) -> float:
@@ -115,48 +143,40 @@ def write_summary(path: Path, summaries: list[dict[str, float | str | int]]) -> 
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--n-theta", type=int, default=81, help="number of angle grid points")
-    parser.add_argument("--n-omega", type=int, default=81, help="number of angular velocity grid points")
-    parser.add_argument("--omega-max", type=float, default=8.0, help="absolute angular velocity grid bound")
-    parser.add_argument("--u-max", type=float, default=5.0, help="torque limit")
-    parser.add_argument("--dt", type=float, default=0.05, help="time step")
-    parser.add_argument("--duration", type=float, default=12.0, help="closed-loop simulation duration")
-    parser.add_argument("--max-iterations", type=int, default=700, help="maximum VI iterations")
-    parser.add_argument("--out", type=str, default="results", help="output directory")
-    return parser.parse_args()
-
-
 def main() -> None:
-    args = parse_args()
-    out_dir = ensure_dir(args.out)
+    out_dir = ensure_dir(OUTPUT_DIR)
 
-    dynamics = PendulumParams(dt=args.dt, torque_limit=args.u_max)
+    dynamics = PendulumParams(
+        mass=MASS,
+        length=LENGTH,
+        gravity=GRAVITY,
+        damping=DAMPING,
+        dt=DT,
+        torque_limit=INPUT_LIMIT,
+    )
     grid = GridSpec(
-        omega_min=-args.omega_max,
-        omega_max=args.omega_max,
-        n_theta=args.n_theta,
-        n_omega=args.n_omega,
+        omega_min=-OMEGA_MAX,
+        omega_max=OMEGA_MAX,
+        n_theta=N_THETA,
+        n_omega=N_OMEGA,
     )
     cost_params = CostParams()
-    actions = (-args.u_max, 0.0, args.u_max)
 
     experiment_summaries = []
-    for cost_name in ("minimum_time", "quadratic"):
+    for cost_name in COST_FUNCTIONS:
         config = ValueIterationConfig(
-            actions=actions,
+            actions=INPUT_GRID,
             cost_name=cost_name,
-            max_iterations=args.max_iterations,
+            max_iterations=MAX_ITERATIONS,
         )
         print(f"Running value iteration for {cost_name}...")
         result = run_value_iteration(grid, dynamics, cost_params, config)
         trajectory = simulate_policy(
             result,
             dynamics,
-            theta0=pi - 0.05,
-            omega0=0.0,
-            duration=args.duration,
+            theta0=THETA_0,
+            omega0=OMEGA_0,
+            duration=SIMULATION_TIME,
         )
         experiment_summaries.append(export_result(result, trajectory, out_dir))
         print(
